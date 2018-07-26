@@ -1,7 +1,10 @@
 require 'yaml'
+require 'remedy'
 require_relative 'board'
 
 class MinesweeperGame
+  include Remedy
+
   LAYOUTS = {
     small: { grid_size: 9, num_bombs: 10 },
     medium: { grid_size: 16, num_bombs: 40 },
@@ -11,15 +14,12 @@ class MinesweeperGame
   def initialize(size)
     layout = LAYOUTS[size]
     @board = Board.new(layout[:grid_size], layout[:num_bombs])
+    @size = layout[:grid_size]
   end
 
   def play
     until @board.won? || @board.lost?
-      system("clear")
-      puts @board.render
-
-      action, pos = get_move
-      perform_move(action, pos)
+      get_move
     end
 
     if @board.won?
@@ -33,12 +33,43 @@ class MinesweeperGame
   private
 
   def get_move
-    puts "Please enter an action type, followed by the coordinates"
-    puts "Action types - e: explore, f: flag, s: save"
+    user_input = Interaction.new
+    start_x = start_y = 0
+    pos = [start_x, start_y]
+    tile = @board[pos]
+    tile.visit(pos)
+    puts @board.render
+    puts "Please move using your keyboard arrow keys. When you have the space you want selected, press an action key"
+    puts "Action keys - e: explore, f: flag, s: save"
+    user_input.loop do |key|
+      system("clear")
+      puts "Action keys - e: explore, f: flag, s: save"
 
-    action_type, row_s, col_s = gets.chomp.split(",")
-
-    [action_type, [row_s.to_i, col_s.to_i]]
+      case key.to_s
+      when "right"
+        start_y += 1 unless start_y >= (@size - 1)
+      when "left"
+        start_y -= 1 unless start_y <= 0
+      when "up"
+        start_x -= 1 unless start_x <= 0
+      when "down"
+        start_x += 1 unless start_x >= (@size - 1)
+      when "e"
+        perform_move("e", pos)
+      when "f"
+        perform_move("f", pos)
+      when "s"
+        perform_move("s", pos)
+      end
+      if @board.lost? || @board.won?
+        @board.reveal
+        return
+      end
+      pos = [start_x, start_y]
+      tile = @board[pos]
+      tile.visit(pos)
+      puts @board.render
+    end
   end
 
   def perform_move(action_type, pos)
@@ -60,7 +91,7 @@ class MinesweeperGame
 
     File.write(filename, YAML.dump(self))
   end
-  
+
 end
 
 if $PROGRAM_NAME == __FILE__

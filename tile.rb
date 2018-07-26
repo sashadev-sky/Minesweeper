@@ -13,10 +13,11 @@ class Tile
   ].freeze.each(&:freeze)
 
   attr_reader :pos
+  attr_accessor :visited
 
   def initialize(board, pos)
     @board, @pos = board, pos
-    @bombed, @explored, @flagged = false, false, false
+    @bombed, @explored, @flagged, @visited = false, false, false, false
   end
 
   def bombed?
@@ -29,6 +30,10 @@ class Tile
 
   def flagged?
     @flagged
+  end
+
+  def visited?
+    @visited
   end
 
   def adjacent_bomb_count
@@ -48,6 +53,11 @@ class Tile
     end
 
     self
+  end
+
+  def visit(pos)
+    @board.grid.flatten.each { |tile| tile.visited = false }
+    @visited = true
   end
 
   def inspect
@@ -82,10 +92,16 @@ class Tile
   end
 
   def render
-    if flagged?
+    if flagged? && visited?
+      "F".colorize(:green)
+    elsif flagged?
       "F"
+    elsif explored? && visited?
+      adjacent_bomb_count == 0 ? "_".colorize(:green) : adjacent_bomb_count.to_s.colorize(:green)
     elsif explored?
       adjacent_bomb_count == 0 ? "_" : adjacent_bomb_count.to_s.colorize(color)
+    elsif visited?
+      "*".colorize(:green)
     else
       "*"
     end
