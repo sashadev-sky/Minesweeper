@@ -10,7 +10,7 @@ class Tile
     [ 1, -1],
     [ 1,  0],
     [ 1,  1]
-  ].freeze
+  ].freeze.each(&:freeze)
 
   attr_reader :pos
 
