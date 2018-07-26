@@ -35,6 +35,7 @@ class MinesweeperGame
   def get_move
     puts "Please enter an action type, followed by the coordinates"
     puts "Action types - e: explore, f: flag, s: save"
+
     action_type, row_s, col_s = gets.chomp.split(",")
 
     [action_type, [row_s.to_i, col_s.to_i]]
@@ -59,6 +60,7 @@ class MinesweeperGame
 
     File.write(filename, YAML.dump(self))
   end
+  
 end
 
 if $PROGRAM_NAME == __FILE__
