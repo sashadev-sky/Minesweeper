@@ -59,5 +59,5 @@ class Board
 
     nil
   end
+  
 end
-
