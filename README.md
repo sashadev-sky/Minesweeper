@@ -3,7 +3,7 @@
 ## Overview
 
 - Terminal version of Minesweeper Game built in Ruby.
-- To play, run the command `ruby minesweeper.rb`
+- To play, run the command `ruby game.rb`
 - Please note: I have altered my code to support keyboard cursor input functionality
 - Use `up`, `down`, `left`, `right` arrow keys to move around the grid and `e`, `f`, and `s` to perform actions
 
