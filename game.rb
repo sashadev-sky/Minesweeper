@@ -24,8 +24,10 @@ class MinesweeperGame
 
     if @board.won?
       puts "You win!"
+      puts "It took you #{@end_time - @start_time} seconds to win"
     elsif @board.lost?
       puts "**Bomb hit!**"
+      puts "You lasted #{@end_time - @start_time} seconds"
       puts @board.reveal
     end
   end
@@ -33,6 +35,7 @@ class MinesweeperGame
   private
 
   def get_move
+    @start_time = Time.now
     user_input = Interaction.new
     start_x = start_y = 0
     pos = [start_x, start_y]
@@ -61,10 +64,13 @@ class MinesweeperGame
       when "s"
         perform_move("s", pos)
       end
+
       if @board.lost? || @board.won?
+        @end_time = Time.now
         @board.reveal
         return
       end
+
       pos = [start_x, start_y]
       tile = @board[pos]
       tile.visit(pos)
